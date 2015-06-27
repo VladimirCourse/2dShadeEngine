@@ -14,23 +14,28 @@ bool ShadeObject::checkLineIntersection(sf::Vector2f pa1, sf::Vector2f pa2 , sf:
     v2 = (pb2.x - pb1.x) * (pa2.y - pb1.y) - (pb2.y - pb1.y) * (pa2.x - pb1.x);
     v3 = (pa2.x - pa1.x) * (pb1.y - pa1.y) - (pa2.y - pa1.y) * (pb1.x - pa1.x);
     v4 = (pa2.x - pa1.x) * (pb2.y - pa1.y) - (pa2.y - pa1.y) * (pb2.x - pa1.x);
+    //std::cout<<"vs"<<v1<<" "<<v2<<" "<<v3<<" "<<v4;
     return (v1*v2<0) && (v3*v4<0);
 }
 
-sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, sf::Vector2f side1, sf::Vector2f side2, bool &result){
+bool ShadeObject::checkAllIntersections(sf::Vector2f posFrom, sf::Vector2f posTo){
+    bool result = 0;
+    for (int i = 0; i < m_shapePoints.size() - 1; i++){
+        result = result || checkLineIntersection(posFrom, posTo, m_shapePoints[i] + m_center, m_shapePoints[i+1] + m_center);
+    }
+
+    return result || checkLineIntersection(posFrom, posTo, m_shapePoints[0] + m_center, m_shapePoints.back() + m_center);
+}
+
+sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, bool &result){
     sf::Vector2f vec = point - posFrom;
-    sf::Vector2f eps = point - (m_center + sf::Vector2f(60, 60));
-    eps = eps*0.5f - eps;
+    sf::Vector2f eps = point - (m_center + sf::Vector2f(65, 65));
+    eps = eps*0.9f - eps;
     float size = sqrt(vec.x*vec.x + vec.y*vec.y);
     //пофиксить для близкого расстояния
-    vec *=sqrtf(500.0/size);
+    vec *=1000.f/size;
     vec += point;
-    bool b1 = checkLineIntersection(side1, point + eps, posFrom, vec);
-    bool b2 = checkLineIntersection(point + eps, side2, posFrom, vec);
-    result = b1 || b2;
-    if (result){
-        return point;
-    }
+    result = checkAllIntersections(posFrom, vec + eps*-1.f);
     return vec;
 }
 
@@ -38,31 +43,30 @@ void ShadeObject::formShade(sf::Vector2f lightPos){
     bool res = false;
     int polySize = m_shapePoints.size();
     int takeId = -1;
+    sf::Vector2f lastPoint;
+    sf::Vector2f lastEnd;
+    float maxSize = 0;
     for (int i = 0; i < polySize; i++){
-        int left = i - 1, right = i + 1;
-        if (i == 0){
-            left = polySize - 1;
-        }
-        if (i == polySize){
-            right = 0;
-        }
         sf::Vector2f pointPos =  m_shapePoints[i] + m_center;
-        sf::Vector2f endPos = getShadeSideVector(lightPos, pointPos, m_shapePoints[left] + m_center, m_shapePoints[right] + m_center, res);
+        sf::Vector2f endPos = getShadeSideVector(lightPos, pointPos, res);
         if (!res && takeId == -1){
             takeId = i;
             m_shade.setPoint(3, pointPos);
             m_shade.setPoint(0, endPos);
-            res = false;
+            res = true;
         }
         if (!res && takeId != -1){
-            int px = pointPos.x, py = pointPos.y;
-            if ((m_shade.getPoint(takeId).x == px && px == lightPos.x) || (m_shade.getPoint(takeId).y == py && py == lightPos.y)){
-                continue;
-            }
-            m_shade.setPoint(2, pointPos);
-            m_shade.setPoint(1, endPos);
+            sf::Vector2f vec = m_shade.getPoint(0) - endPos;
+            float curSize = sqrt(vec.x*vec.x + vec.y*vec.y);
+            if (curSize >= maxSize ){
+                maxSize = curSize;
+                lastPoint = pointPos;
+                lastEnd = endPos;
+           }
         }
     }
+    m_shade.setPoint(2, lastPoint);
+    m_shade.setPoint(1, lastEnd);
 }
 
 sf::ConvexShape ShadeObject::getShade(){
