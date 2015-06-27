@@ -15,7 +15,7 @@ private:
     //сама тень
     sf::ConvexShape m_shade;
     bool checkLineIntersection(sf::Vector2f pa1, sf::Vector2f pa2 , sf::Vector2f pb1, sf::Vector2f pb2);
-    sf::Vector2f getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, sf::Vector2f side1, sf::Vector2f side2, bool &result, sf::Vector2f eps2);
+    sf::Vector2f getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, sf::Vector2f side1, sf::Vector2f side2, bool &result);
 
 public:
     ShadeObject(sf::Vector2f center, std::vector <sf::Vector2f> shapePoints);

@@ -1,11 +1,6 @@
 #include <shadeobject.h>
 #include <iostream>
 
-const sf::Vector2f LEFTUP = sf::Vector2f(-1, -1);
-const sf::Vector2f RIGHTUP = sf::Vector2f(1, -1);
-const sf::Vector2f LEFTDOWN = sf::Vector2f(-1, 1);
-const sf::Vector2f RIGHTDOWN = sf::Vector2f(1, 1);
-
 ShadeObject::ShadeObject(sf::Vector2f center, std::vector<sf::Vector2f> shapePoints){
     m_center = center;
     m_shapePoints = shapePoints;
@@ -22,17 +17,17 @@ bool ShadeObject::checkLineIntersection(sf::Vector2f pa1, sf::Vector2f pa2 , sf:
     return (v1*v2<0) && (v3*v4<0);
 }
 
-sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, sf::Vector2f side1, sf::Vector2f side2, bool &result,  sf::Vector2f eps2){
+sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, sf::Vector2f side1, sf::Vector2f side2, bool &result){
     sf::Vector2f vec = point - posFrom;
     sf::Vector2f eps = point - (m_center + sf::Vector2f(60, 60));
-    eps = eps*50.f - eps;
+    eps = eps*0.5f - eps;
     float size = sqrt(vec.x*vec.x + vec.y*vec.y);
+    //пофиксить для близкого расстояния
     vec.x*=1000/size;
     vec.y*=1000/size;
-    //std::cout<<
-    vec += point + eps;
-    bool b1 = checkLineIntersection(side1, point, posFrom, vec);
-    bool b2 = checkLineIntersection(point, side2, posFrom, vec);
+    vec += point;
+    bool b1 = checkLineIntersection(side1, point + eps, posFrom, vec);
+    bool b2 = checkLineIntersection(point + eps, side2, posFrom, vec);
     result = b1 || b2;
     if (result){
         return point;
@@ -41,7 +36,6 @@ sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f 
 }
 
 void ShadeObject::formShade(sf::Vector2f lightPos){
- sf::Vector2f pointPos[] = {LEFTUP, RIGHTUP, RIGHTDOWN + sf::Vector2f(1,0),RIGHTDOWN,LEFTDOWN};
     bool res = false;
     bool taked = false;
     int polySize = m_shapePoints.size();
@@ -53,7 +47,7 @@ void ShadeObject::formShade(sf::Vector2f lightPos){
         if (i == polySize){
             right = 0;
         }
-        sf::Vector2f endPos = getShadeSideVector(lightPos, m_shapePoints[i] + m_center, m_shapePoints[left] + m_center, m_shapePoints[right] + m_center, res, pointPos[i]);
+        sf::Vector2f endPos = getShadeSideVector(lightPos, m_shapePoints[i] + m_center, m_shapePoints[left] + m_center, m_shapePoints[right] + m_center, res);
         if (!res && !taked){
             taked = true;
             m_shade.setPoint(3, m_shapePoints[i] + m_center);
