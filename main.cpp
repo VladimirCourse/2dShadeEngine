@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <SFML/Graphics.hpp>
+#include "shadeobject.h"
 
 const sf::Vector2f LEFTUP = sf::Vector2f(-1, -1);
 const sf::Vector2f RIGHTUP = sf::Vector2f(1, -1);
@@ -154,8 +155,8 @@ int main(){
                         taked = true;
                         //posOne = line[i+1].position;
                         pos1 = i;
-                        // shade.setPoint(3, p2.getPoint(i) + p2.getPosition());
-                        // shade.setPoint(0, line[i+1].position);
+                         shade.setPoint(3, p2.getPoint(i) + p2.getPosition());
+                         shade.setPoint(0, line[i+1].position);
 
                         res = false;
                     }
@@ -163,16 +164,16 @@ int main(){
                     if (!res && taked){
                         pos2 = i;
                         // std::cout<<i<<std::endl;
-                        //          shade.setPoint(2, p2.getPoint(i) + p2.getPosition());
-                        //        shade.setPoint(1, line[i+1].position);
+                                  shade.setPoint(2, p2.getPoint(i) + p2.getPosition());
+                                shade.setPoint(1, line[i+1].position);
                     }
                 }
                 // std::cout<<taked<<std::endl;
                 std::cout<<pos1<<" "<<pos2<<std::endl;
-                shade.setPoint(3, p2.getPoint(pos1) + p2.getPosition());
-                shade.setPoint(0, line[pos1+1].position);
-                shade.setPoint(2, p2.getPoint(pos2) + p2.getPosition());
-                shade.setPoint(1, line[pos2+1].position);
+               // shade.setPoint(3, p2.getPoint(pos1) + p2.getPosition());
+               // shade.setPoint(0, line[pos1+1].position);
+               // shade.setPoint(2, p2.getPoint(pos2) + p2.getPosition());
+               // shade.setPoint(1, line[pos2+1].position);
 
             }
             if (event.type = sf::Event::KeyPressed ){
@@ -203,7 +204,7 @@ int main(){
         window.draw(backSprite);
         window.draw(shade);
         window.draw(p2);
-        lightMapTexture.clear(sf::Color(0,0,0));
+        lightMapTexture.clear(sf::Color(222,222,222));
         light1.setColor(sf::Color(255,180,130,255));
         lightMapTexture.draw(light1, sf::BlendAdd);
         lightMapTexture.display();

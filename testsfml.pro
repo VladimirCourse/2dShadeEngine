@@ -3,7 +3,8 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    shadeobject.cpp
 
 LIBS += -LE:/SFML2/lib
 
@@ -15,4 +16,7 @@ DEPENDPATH += E:/SFML2/include
 
 include(deployment.pri)
 qtcAddDeployment()
+
+HEADERS += \
+    shadeobject.h
 
