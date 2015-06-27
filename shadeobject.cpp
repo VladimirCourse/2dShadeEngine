@@ -14,7 +14,6 @@ bool ShadeObject::checkLineIntersection(sf::Vector2f pa1, sf::Vector2f pa2 , sf:
     v2 = (pb2.x - pb1.x) * (pa2.y - pb1.y) - (pb2.y - pb1.y) * (pa2.x - pb1.x);
     v3 = (pa2.x - pa1.x) * (pb1.y - pa1.y) - (pa2.y - pa1.y) * (pb1.x - pa1.x);
     v4 = (pa2.x - pa1.x) * (pb2.y - pa1.y) - (pa2.y - pa1.y) * (pb2.x - pa1.x);
-    //std::cout<<"vs"<<v1<<" "<<v2<<" "<<v3<<" "<<v4;
     return (v1*v2<0) && (v3*v4<0);
 }
 
@@ -23,19 +22,26 @@ bool ShadeObject::checkAllIntersections(sf::Vector2f posFrom, sf::Vector2f posTo
     for (int i = 0; i < m_shapePoints.size() - 1; i++){
         result = result || checkLineIntersection(posFrom, posTo, m_shapePoints[i] + m_center, m_shapePoints[i+1] + m_center);
     }
-
     return result || checkLineIntersection(posFrom, posTo, m_shapePoints[0] + m_center, m_shapePoints.back() + m_center);
 }
 
 sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, bool &result){
     sf::Vector2f vec = point - posFrom;
     sf::Vector2f eps = point - (m_center + sf::Vector2f(65, 65));
-    eps = eps*0.9f - eps;
+    eps = eps - eps * 0.9f;
     float size = sqrt(vec.x*vec.x + vec.y*vec.y);
-    //пофиксить для близкого расстояния
-    vec *=1000.f/size;
+    //4len с ним, и так работает
+    vec*=5000/size;
+    //float angle = vec.x/size;
+   // std::cout<<acos(angle)*180.0/3.14<<std::endl;
+  //  vec.x+=100;
+  //  vec.y+=tan(angle)*100;
+ //   float c = ((vec.x + 100)*vec.y)/vec.x - vec.y;
+    //std::cout<<vec.y + c<<std::endl;
+   // vec.y = c;
+   // vec.x += 100;
     vec += point;
-    result = checkAllIntersections(posFrom, vec + eps*-1.f);
+    result = checkAllIntersections(posFrom, vec + eps);
     return vec;
 }
 

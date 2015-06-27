@@ -73,13 +73,11 @@ int main(){
         }
 
         window.clear();
-        // Draw the sprite
         window.draw(backSprite);
-        //window.draw(shade);
         window.draw(obj.getShade());
         window.draw(p2);
         lightMapTexture.clear(sf::Color(11,11,11));
-        light1.setColor(sf::Color(255,180,130,255));
+        light1.setColor(sf::Color(230,230,55,255));
         lightMapTexture.draw(light1, sf::BlendAdd);
         lightMapTexture.display();
 
@@ -87,13 +85,6 @@ int main(){
         lightmap.setPosition(0, 0); // Where on the backbuffer we will draw
         window.draw(lightmap, sf::BlendMultiply); // This blendmode is used to add the darkness from the lightmap with the parts where we draw ur light image show up brighter
 
-        // window.draw(polygon);
-
-        // window.draw(lightSprite, sf::BlendMultiply);
-
-
-
-        // Update the window
         window.display();
     }
     return EXIT_SUCCESS;
