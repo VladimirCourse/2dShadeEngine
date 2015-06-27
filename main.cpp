@@ -97,8 +97,11 @@ int main(){
     shape.setFillColor(sf::Color(100, 250, 50, 100));
     int pos1,  pos2;
 
-
-
+    std::vector <sf::Vector2f> pts;
+    for (int i = 0; i < p2.getPointCount(); i++){
+        pts.push_back(p2.getPoint(i));
+    }
+    ShadeObject obj(p2.getPosition(), pts);
     sf::Texture lightTexture;
     sf::Sprite light1;
 
@@ -114,10 +117,6 @@ int main(){
     lightTexture.setSmooth(true); // (Optional) It just smoothes the light out a bit
 
     light1.setTexture(lightTexture); // Make our lightsprite use our loaded image
-  //  light.setTextureRect(sf::IntRect(0, 0, 300, 300)); // Set where on the image we will take the sprite (X position, Y position, Width, Height)
- //   light.setOrigin(256.f, 256.f); // This will offset where we draw our ligts so the center of the light is right over where we want our light to be
-
-
 
 
 
@@ -133,7 +132,9 @@ int main(){
                 //  polygon.setPoint(2, sf::Vector2f(sf::Mouse::getPosition(window)));
                 sf::Vector2f pos = sf::Vector2f(sf::Mouse::getPosition(window));
                 lightSprite.setPosition(pos - sf::Vector2f(160, 160));
-                light1.setPosition(pos - sf::Vector2f(160, 160));
+            //    std::cout<<pos.y<<" "<<p2.getPosition().x<<std::endl;
+                obj.formShade(pos);
+              /*  light1.setPosition(pos - sf::Vector2f(160, 160));
                 line[0].position = pos;
                 bool res = false;
 
@@ -173,7 +174,7 @@ int main(){
                // shade.setPoint(3, p2.getPoint(pos1) + p2.getPosition());
                // shade.setPoint(0, line[pos1+1].position);
                // shade.setPoint(2, p2.getPoint(pos2) + p2.getPosition());
-               // shade.setPoint(1, line[pos2+1].position);
+               // shade.setPoint(1, line[pos2+1].position);*/
 
             }
             if (event.type = sf::Event::KeyPressed ){
@@ -183,26 +184,12 @@ int main(){
                 }
             }
         }
-        if (alpha >= 248){
-            //     t = 1;
-        }
-        if (alpha <= 160){
-            //   t = 0;
-        }
 
-        if (t){
-            //     alpha -= 0.1;
-            //       color += 0.1;
-        }else{
-            //   alpha += 0.1;
-            //     color -= 0.1;
-        }
-        //   polygon.setFillColor(sf::Color(color,color,0,alpha));
-        // Clear screen
         window.clear();
         // Draw the sprite
         window.draw(backSprite);
-        window.draw(shade);
+        //window.draw(shade);
+        window.draw(obj.getShade());
         window.draw(p2);
         lightMapTexture.clear(sf::Color(222,222,222));
         light1.setColor(sf::Color(255,180,130,255));
