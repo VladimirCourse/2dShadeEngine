@@ -23,8 +23,7 @@ sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f 
     eps = eps*0.5f - eps;
     float size = sqrt(vec.x*vec.x + vec.y*vec.y);
     //пофиксить для близкого расстояния
-    vec.x*=1000/size;
-    vec.y*=1000/size;
+    vec *=sqrtf(500.0/size);
     vec += point;
     bool b1 = checkLineIntersection(side1, point + eps, posFrom, vec);
     bool b2 = checkLineIntersection(point + eps, side2, posFrom, vec);
@@ -37,8 +36,8 @@ sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f 
 
 void ShadeObject::formShade(sf::Vector2f lightPos){
     bool res = false;
-    bool taked = false;
     int polySize = m_shapePoints.size();
+    int takeId = -1;
     for (int i = 0; i < polySize; i++){
         int left = i - 1, right = i + 1;
         if (i == 0){
@@ -47,15 +46,20 @@ void ShadeObject::formShade(sf::Vector2f lightPos){
         if (i == polySize){
             right = 0;
         }
-        sf::Vector2f endPos = getShadeSideVector(lightPos, m_shapePoints[i] + m_center, m_shapePoints[left] + m_center, m_shapePoints[right] + m_center, res);
-        if (!res && !taked){
-            taked = true;
-            m_shade.setPoint(3, m_shapePoints[i] + m_center);
+        sf::Vector2f pointPos =  m_shapePoints[i] + m_center;
+        sf::Vector2f endPos = getShadeSideVector(lightPos, pointPos, m_shapePoints[left] + m_center, m_shapePoints[right] + m_center, res);
+        if (!res && takeId == -1){
+            takeId = i;
+            m_shade.setPoint(3, pointPos);
             m_shade.setPoint(0, endPos);
             res = false;
         }
-        if (!res && taked){
-            m_shade.setPoint(2, m_shapePoints[i] + m_center);
+        if (!res && takeId != -1){
+            int px = pointPos.x, py = pointPos.y;
+            if ((m_shade.getPoint(takeId).x == px && px == lightPos.x) || (m_shade.getPoint(takeId).y == py && py == lightPos.y)){
+                continue;
+            }
+            m_shade.setPoint(2, pointPos);
             m_shade.setPoint(1, endPos);
         }
     }
