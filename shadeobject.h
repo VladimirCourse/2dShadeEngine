@@ -10,6 +10,8 @@ class ShadeObject{
 private:
     //центр полигона объекта, который отбрасывает тень
     sf::Vector2f m_center;
+    //позиция объекта
+    sf::Vector2f m_position;
     //точки полигона
     std::vector <sf::Vector2f> m_shapePoints;
     //сама тень
@@ -19,7 +21,7 @@ private:
     sf::Vector2f getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, bool &result);
 
 public:
-    ShadeObject(sf::Vector2f center, std::vector <sf::Vector2f> shapePoints);
+    ShadeObject(sf::Vector2f position, sf::Vector2f center, std::vector <sf::Vector2f> shapePoints);
     void formShade(sf::Vector2f lightPos);
     sf::ConvexShape getShade();
 

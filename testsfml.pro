@@ -4,7 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    shadeobject.cpp
+    shadeobject.cpp \
+    intersection.cpp
 
 LIBS += -LE:/SFML2/lib
 
@@ -18,5 +19,6 @@ include(deployment.pri)
 qtcAddDeployment()
 
 HEADERS += \
-    shadeobject.h
+    shadeobject.h \
+    intersection.h
 

@@ -9,10 +9,11 @@ int main(){
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     sf::Texture back;
-    back.loadFromFile("C:\\Users\\wooden\\Documents\\testsfml\\back.png");
+    back.loadFromFile("C:\\Users\\wooden\\Documents\\testsfml\\background.png");
+    back.setSmooth(true);
     sf::Sprite backSprite;
     backSprite.setTexture(back);
-
+    backSprite.setScale(800.0f/back.getSize().x, 600.0f/back.getSize().y);
 
     sf::ConvexShape p2;
     p2.setPointCount(5);
@@ -32,7 +33,7 @@ int main(){
     for (int i = 0; i < p2.getPointCount(); i++){
         pts.push_back(p2.getPoint(i));
     }
-    ShadeObject obj(p2.getPosition(), pts);
+    ShadeObject obj(p2.getPosition(), sf::Vector2f(65,65), pts);
     sf::Texture lightTexture;
     sf::Sprite light1;
 
@@ -47,7 +48,12 @@ int main(){
 
     light1.setTexture(lightTexture); // Make our lightsprite use our loaded image
 
-
+    sf::Texture lamptex;
+    lamptex.loadFromFile("C:\\Users\\wooden\\Documents\\testsfml\\lamp.png");
+    sf::Sprite light2;
+    light2.setTexture(lamptex);
+    light2.setScale(0.5,0.5);
+    light2.setOrigin(160,160);
 
     while (window.isOpen()){
         // Process events
@@ -61,6 +67,7 @@ int main(){
 
                 sf::Vector2f pos = sf::Vector2f(sf::Mouse::getPosition(window));
                 light1.setPosition(pos - sf::Vector2f(160, 160));
+                light2.setPosition(pos);
                 obj.formShade(pos);
 
             }
@@ -76,11 +83,11 @@ int main(){
         window.draw(backSprite);
         window.draw(obj.getShade());
         window.draw(p2);
-        lightMapTexture.clear(sf::Color(11,11,11));
+        lightMapTexture.clear(sf::Color(11,11,15));
         light1.setColor(sf::Color(230,230,55,255));
         lightMapTexture.draw(light1, sf::BlendAdd);
         lightMapTexture.display();
-
+        window.draw(light2);
         lightmap.setTextureRect(sf::IntRect(0, 0, 800, 600)); // What from the lightmap we will draw
         lightmap.setPosition(0, 0); // Where on the backbuffer we will draw
         window.draw(lightmap, sf::BlendMultiply); // This blendmode is used to add the darkness from the lightmap with the parts where we draw ur light image show up brighter

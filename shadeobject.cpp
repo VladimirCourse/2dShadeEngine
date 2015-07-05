@@ -1,9 +1,8 @@
 #include <shadeobject.h>
 #include <iostream>
 
-ShadeObject::ShadeObject(sf::Vector2f center, std::vector<sf::Vector2f> shapePoints){
-    m_center = center;
-    m_shapePoints = shapePoints;
+ShadeObject::ShadeObject(sf::Vector2f position, sf::Vector2f center, std::vector<sf::Vector2f> shapePoints):
+    m_position(position), m_center(center), m_shapePoints(shapePoints){
     m_shade.setPointCount(4);
     m_shade.setFillColor(sf::Color(0,0,0,245));
 }
@@ -20,26 +19,18 @@ bool ShadeObject::checkLineIntersection(sf::Vector2f pa1, sf::Vector2f pa2 , sf:
 bool ShadeObject::checkAllIntersections(sf::Vector2f posFrom, sf::Vector2f posTo){
     bool result = 0;
     for (int i = 0; i < m_shapePoints.size() - 1; i++){
-        result = result || checkLineIntersection(posFrom, posTo, m_shapePoints[i] + m_center, m_shapePoints[i+1] + m_center);
+        result = result || checkLineIntersection(posFrom, posTo, m_shapePoints[i] + m_position, m_shapePoints[i+1] + m_position);
     }
-    return result || checkLineIntersection(posFrom, posTo, m_shapePoints[0] + m_center, m_shapePoints.back() + m_center);
+    return result || checkLineIntersection(posFrom, posTo, m_shapePoints[0] + m_position, m_shapePoints.back() + m_position);
 }
 
 sf::Vector2f ShadeObject::getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, bool &result){
     sf::Vector2f vec = point - posFrom;
-    sf::Vector2f eps = point - (m_center + sf::Vector2f(65, 65));
+    sf::Vector2f eps = point - (m_position + m_center);
     eps = eps - eps * 0.9f;
     float size = sqrt(vec.x*vec.x + vec.y*vec.y);
     //4len с ним, и так работает
     vec*=5000/size;
-    //float angle = vec.x/size;
-   // std::cout<<acos(angle)*180.0/3.14<<std::endl;
-  //  vec.x+=100;
-  //  vec.y+=tan(angle)*100;
- //   float c = ((vec.x + 100)*vec.y)/vec.x - vec.y;
-    //std::cout<<vec.y + c<<std::endl;
-   // vec.y = c;
-   // vec.x += 100;
     vec += point;
     result = checkAllIntersections(posFrom, vec + eps);
     return vec;
@@ -53,7 +44,7 @@ void ShadeObject::formShade(sf::Vector2f lightPos){
     sf::Vector2f lastEnd;
     float maxSize = 0;
     for (int i = 0; i < polySize; i++){
-        sf::Vector2f pointPos =  m_shapePoints[i] + m_center;
+        sf::Vector2f pointPos =  m_shapePoints[i] + m_position;
         sf::Vector2f endPos = getShadeSideVector(lightPos, pointPos, res);
         if (!res && takeId == -1){
             takeId = i;
