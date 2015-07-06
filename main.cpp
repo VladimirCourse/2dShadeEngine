@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "shadeobject.h"
 
-
+#include "intersection.h"
 
 int main(){
     // Create the main window
@@ -14,6 +14,15 @@ int main(){
     sf::Sprite backSprite;
     backSprite.setTexture(back);
     backSprite.setScale(800.0f/back.getSize().x, 600.0f/back.getSize().y);
+
+
+    sf::ConvexShape p1;
+    p1.setPointCount(4);
+    p1.setPoint(0, sf::Vector2f(0, 0));
+    p1.setPoint(1, sf::Vector2f(55, 0));
+    p1.setPoint(2, sf::Vector2f(130, 55));
+    p1.setPoint(3, sf::Vector2f(0, 55));
+    p1.setFillColor(sf::Color(0,222,225,255));
 
     sf::ConvexShape p2;
     p2.setPointCount(5);
@@ -28,6 +37,11 @@ int main(){
     // lightSprite.setColor(sf::Color(0,0,0,240));
     // Start the game loop
 
+
+    std::vector <sf::Vector2f> pts1;
+    for (int i = 0; i < p1.getPointCount(); i++){
+        pts1.push_back(p1.getPoint(i));
+    }
 
     std::vector <sf::Vector2f> pts;
     for (int i = 0; i < p2.getPointCount(); i++){
@@ -55,6 +69,24 @@ int main(){
     light2.setScale(0.5,0.5);
     light2.setOrigin(160,160);
 
+    Intersection inter;
+    /*
+    std::vector <sf::Vector2f> poly1;
+    std::vector <sf::Vector2f> poly2;
+    poly1.push_back(sf::Vector2f(0, 0));
+    poly1.push_back(sf::Vector2f(0, 3));
+    poly1.push_back(sf::Vector2f(3, 3));
+    poly1.push_back(sf::Vector2f(3, 0));
+
+    poly2.push_back(sf::Vector2f(4, 4));
+    poly2.push_back(sf::Vector2f(4, 6));
+    poly2.push_back(sf::Vector2f(6, 6));
+    poly2.push_back(sf::Vector2f(6, 4));
+    std::cout<<inter.intersection(poly1, poly2);
+    */
+    for (int i = 0; i < pts.size(); i++){
+        pts[i] += p2.getPosition();
+    }
     while (window.isOpen()){
         // Process events
         sf::Event event;
@@ -69,6 +101,20 @@ int main(){
                 light1.setPosition(pos - sf::Vector2f(160, 160));
                 light2.setPosition(pos);
                 obj.formShade(pos);
+                p1.setPosition(pos);
+                for (int i = 0; i < pts1.size(); i++){
+                    pts1[i] = pos + p1.getPoint(i);
+                 //   std::cout<<pts1[i].x <<" " << pts1[i].y <<std::endl;
+                }
+            //     std::cout<<"////////////"<<std::endl;
+                for (int i = 0; i < pts.size(); i++){
+
+                //    std::cout<<pts[i].x <<" " << pts[i].y <<std::endl;
+                }
+             //   std::cout<<std::endl;
+
+                std::cout<<inter.intersection(pts1, pts)<<std::endl;
+
 
             }
             if (event.type = sf::Event::KeyPressed ){
@@ -83,7 +129,8 @@ int main(){
         window.draw(backSprite);
         window.draw(obj.getShade());
         window.draw(p2);
-        lightMapTexture.clear(sf::Color(11,11,15));
+         window.draw(p1);
+        lightMapTexture.clear(sf::Color(222,222,222));
         light1.setColor(sf::Color(230,230,55,255));
         lightMapTexture.draw(light1, sf::BlendAdd);
         lightMapTexture.display();
