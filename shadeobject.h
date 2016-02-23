@@ -5,25 +5,30 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+//TODO: fix artifacts
 class ShadeObject{
 
 private:
     //центр полигона объекта, который отбрасывает тень
-    sf::Vector2f m_center;
+    sf::Vector2f _center;
     //позиция объекта
-    sf::Vector2f m_position;
+    sf::Vector2f _position;
     //точки полигона
-    std::vector <sf::Vector2f> m_shapePoints;
-    //сама тень
-    sf::ConvexShape m_shade;
-    bool checkLineIntersection(sf::Vector2f pa1, sf::Vector2f pa2 , sf::Vector2f pb1, sf::Vector2f pb2);
-    bool checkAllIntersections(sf::Vector2f posFrom, sf::Vector2f posTo);
-    sf::Vector2f getShadeSideVector(sf::Vector2f posFrom, sf::Vector2f point, bool &result);
+    std::vector <sf::Vector2f> _shapePoints;
+    //тень объекта
+    sf::ConvexShape _shade;
+    //пересечение двух прямых
+    bool isLineIntersects(const sf::Vector2f &pa1, const sf::Vector2f &pa2,
+                          const sf::Vector2f &pb1, const sf::Vector2f &pb2);
+    //поиск вектора от источника света до бесконечности, который не пересекает объект и проходит по краю объекта
+    const sf::Vector2f &traceShadeVector(const sf::Vector2f &posFrom, const sf::Vector2f &pointPos, bool &result);
 
 public:
-    ShadeObject(sf::Vector2f position, sf::Vector2f center, std::vector <sf::Vector2f> shapePoints);
-    void formShade(sf::Vector2f lightPos);
-    sf::ConvexShape getShade();
+    ShadeObject(const sf::Vector2f &position, const sf::Vector2f &center,
+                const std::vector <sf::Vector2f> &shapePoints);
+    //пересчитать тень
+    void calculateShade(const sf::Vector2f &lightPos);
+    const sf::ConvexShape &getShade();
 
 };
 
